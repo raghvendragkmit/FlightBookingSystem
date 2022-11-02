@@ -3,6 +3,7 @@ const express = require("express")
 const dotenv = require("dotenv")
 const app = express()
 const db = require("./connection")
+const authRouter = require("./routes/auth.route")
 dotenv.config()
 
 //checking database connection
@@ -16,5 +17,7 @@ db.connect((error) => {
 
 app.use(express.json())
 app.use(cookieParser())
+
+app.use("/api/auth", authRouter)
 
 module.exports = app
