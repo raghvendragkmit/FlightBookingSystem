@@ -1,5 +1,4 @@
-const { login, registerPassenger } = require("../controllers/auth.controller")
-const { signOut } = require("../controllers/signOut")
+const { login, registerPassenger, signOut } = require("../controllers/auth.controller")
 const express = require("express")
 const router = express.Router()
 
