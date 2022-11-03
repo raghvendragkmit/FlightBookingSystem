@@ -37,3 +37,4 @@ exports.deleteDiscounts = (req, res) => {
 		})
 	}
 }
+
