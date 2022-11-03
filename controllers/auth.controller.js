@@ -1,4 +1,3 @@
-const connection = require("../connection")
 const bcrypt = require("bcrypt")
 const dotenv = require("dotenv")
 const jwt = require("jsonwebtoken")
@@ -46,16 +45,16 @@ exports.login = (req, res) => {
 	const email = req.body.email
 	let password = req.body.password
 
-	if (email == "" || password == "") {
+	if (!email || !password) {
 		return res.status(400).json({
 			message: "please enter all required  details",
 		})
-	} else if (email == "admin@flightbooking.com" && password == process.env.ADMIN_PASSWORD) {
-		const token = createToken({ id: 1, email: email })
+	} else if (email == process.env.ADMIN_EMAIL && password == process.env.ADMIN_PASSWORD) {
+		const token = createToken({ id: process.env.ADMIN_ID, email: email })
 		res.cookie("token", token, { expire: new Date() + 100000 })
 		return res.status(200).json({ message: "login successfully", token: token })
 	} else {
-		db.query("select * from Passengers", (err, result) => {
+		db.query("select * from Passengers where email = ?", [email], (err, result) => {
 			if (result.length == 0) return res.status(404).json({ message: "email address is not registered yet" })
 
 			let validate_password = bcrypt.compareSync(password, result[0].password)
@@ -72,4 +71,11 @@ exports.login = (req, res) => {
 			}
 		})
 	}
+}
+
+exports.signOut = (req, res) => {
+	res.clearCookie("token")
+	return res.status(200).json({
+		message: "Logout Successfully",
+	})
 }
