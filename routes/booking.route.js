@@ -4,6 +4,6 @@ const express = require("express")
 const { isPassenger } = require("../middleware/isPassenger")
 const router = express.Router()
 
-router.post("/booktickets", isSigned, isPassenger, bookTickets);
-router.get("/booktickets", isSigned, isPassenger, getBookingDetails);
+router.post("/booktickets", isSigned, bookTickets);
+router.get("/booktickets", isSigned, getBookingDetails);
 module.exports = router
