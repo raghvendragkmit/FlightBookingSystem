@@ -36,8 +36,8 @@ exports.delete_Discounts = (req, res) => {
   }
 };
 
-exports.apply_Discounts = (req, res) => {
+// // exports.apply_Discounts = (req, res) => {
 
-  apply_Discount({ id: req.id, booking_Id: req.body.bookingId,coupon_Id:req.body.couponId }, (err, result, status_code) => {
-  });
-};
+// //   apply_Discount({ id: req.id, booking_Id: req.body.bookingId,coupon_Id:req.body.couponId }, (err, result, status_code) => {
+// //   });
+// };
