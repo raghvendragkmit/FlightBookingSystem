@@ -36,48 +36,8 @@ exports.delete_Discounts = (req, res) => {
   }
 };
 
-exports.applyDiscounts = (req, res) => {
-  const bookingId = req.body.bookingId;
-  const couponId = req.body.couponId;
-  let amount = 0,
-    discount = 0;
-  if (!bookingId || !couponId) {
-    return res
-      .status(400)
-      .json({ message: "Please enter booking id and coupon id" });
-  }
-  db.query(
-    "select Flights.airlineName, Bookings.id, Bookings.totalAmount from Flights INNER JOIN Bookings ON Bookings.flightId  = Flights.id where Bookings.passengerId = ? AND Bookings.id = ?",
-    [req.id, bookingId],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      }
-      amount = result[0].totalAmount;
-      db.query(
-        "select * from Discounts where id = ? AND availableOn = ?",
-        [couponId, result[0].airlineName],
-        (err, result1) => {
-          if (err) {
-            return res.status(500).json({ error: err });
-          } else if (result1.length == 0) {
-            return res
-              .status(200)
-              .json({ message: "No discounts available on booking" });
-          }
-          discount = result1[0].amount;
-          db.query(
-            "update Bookings set totalAmount = ? where id = ?",
-            [amount - discount, bookingId],
-            (err, result2) => {
-              if (err) {
-                return res.status(500).json({ error: err });
-              }
-              return res.status(200).json({ message: "discount applied" });
-            }
-          );
-        }
-      );
-    }
-  );
+exports.apply_Discounts = (req, res) => {
+
+  apply_Discount({ id: req.id, booking_Id: req.body.bookingId,coupon_Id:req.body.couponId }, (err, result, status_code) => {
+  });
 };
