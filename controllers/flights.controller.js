@@ -5,7 +5,7 @@ const {
     getAllFlight,
 } = require("../services/flight.service");
 exports.createFlights = (req, res) => {
-    createFlight(req.body, (err, result, status_code) => {
+    createFlight({ ...req.body }, (err, result, status_code) => {
         if (err) {
             return res.status(status_code).json(err);
         }

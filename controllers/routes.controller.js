@@ -4,7 +4,7 @@ const {
     deleteRoute,
 } = require("../services/routes.service");
 exports.createRoutes = (req, res) => {
-    createRoute(req.body, (err, result, status_code) => {
+    createRoute({ ...req.body }, (err, result, status_code) => {
         if (err) {
             return res.status(status_code).json(err);
         }
