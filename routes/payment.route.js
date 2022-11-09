@@ -1,8 +1,20 @@
-const { payments } = require("../controllers/payment.controller")
-const { isSigned } = require("../middleware/isSignedIn")
-const express = require("express")
-const { isPassenger } = require("../middleware/isPassenger")
-const router = express.Router()
+const { payments } = require("../controllers/payment.controller");
+const { isSigned } = require("../middleware/isSignedIn");
+const express = require("express");
+const router = express.Router();
+const { validate } = require("../helpers/validation");
+const { body } = require("express-validator");
 
-router.post("/payments", isSigned, isPassenger, payments);
+router.post(
+    "/payments",
+    validate([
+        body(
+            "bookingId",
+            "bookingId is required and must be an integer"
+        ).isInt(),
+        body("paymentType", "paymentType is required").isString().trim().isLength({min:3}),
+    ]),
+    isSigned,
+    payments
+);
 module.exports = router;
