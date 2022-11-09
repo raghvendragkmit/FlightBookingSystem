@@ -1,4 +1,4 @@
-const { create_Flights, delete_Flights, search_Flights } = require("../controllers/flights.controller")
+const { createFlights, deleteFlights, searchFlights } = require("../controllers/flights.controller")
 const { isAdmin } = require("../middleware/IsAdmin")
 const { isSigned } = require("../middleware/isSignedIn")
 const express = require("express")
@@ -15,9 +15,9 @@ router.post("/flights", validate([
   body('takeOffTime').exists(),
   body('landingTime').exists()
 ]),
-  isSigned, isAdmin, create_Flights);
-router.delete("/flights", isSigned, isAdmin, delete_Flights);
-router.get("/flights", isSigned, search_Flights);
+  isSigned, isAdmin, createFlights);
+router.delete("/flights", isSigned, isAdmin, deleteFlights);
+router.get("/flights", isSigned, searchFlights);
 module.exports = router;
 
 

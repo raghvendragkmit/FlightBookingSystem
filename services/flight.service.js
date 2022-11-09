@@ -1,6 +1,6 @@
 const db = require("../connection");
 
-exports.create_Flight = (data, callback) => {
+exports.createFlight = (data, callback) => {
   db.query("INSERT INTO Flights(airlineName, routeId, takeOffTime, landingTime, capacity, ticketPrice, date) values(?,?,?,?,?,?,?)",
     [data.airlineName, data.routeId, data.takeOffTime, data.landingTime, data.capacity, data.ticketPrice, data.date],
     (err, result) => {
@@ -10,7 +10,7 @@ exports.create_Flight = (data, callback) => {
   )
 }
 
-exports.delete_Flight = (data, callback) => {
+exports.deleteFlight = (data, callback) => {
   db.query("DELETE FROM Flights WHERE id=?", [data], (err, result) => {
     if (err) {
       return callback(err, null, 503)
@@ -23,7 +23,7 @@ exports.delete_Flight = (data, callback) => {
 }
 
 
-exports.search_Flight = (data, callback) => {
+exports.searchFlight = (data, callback) => {
   db.query("SELECT id FROM Routes WHERE source=? AND destination=? VALUES(?,?)", [data.source, data.destination], (err, result) => {
     if (err) {
       return callback(err, null, 503);

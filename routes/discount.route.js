@@ -1,17 +1,17 @@
 const {
-  delete_Discounts,
-  create_Discounts,
-  get_All_Discounts,
+  deleteDiscounts,
+  createDiscounts,
+  getAllDiscounts,
   applyDiscounts,
-} = require("../controllers/discount.controller")
-const { isAdmin } = require("../middleware/IsAdmin")
-const { isSigned } = require("../middleware/isSignedIn")
-const express = require("express")
-const { isPassenger } = require("../middleware/isPassenger")
-const router = express.Router()
+} = require("../controllers/discount.controller");
+const { isAdmin } = require("../middleware/IsAdmin");
+const { isSigned } = require("../middleware/isSignedIn");
+const express = require("express");
+const { isPassenger } = require("../middleware/isPassenger");
+const router = express.Router();
 
-router.post("/discounts", isSigned, isAdmin, create_Discounts)
-router.delete("/discounts", isSigned, isAdmin, delete_Discounts)
-router.get("/discounts", isSigned, get_All_Discounts)
-router.post("/applydiscounts", isSigned, isPassenger, applyDiscounts)
-module.exports = router
+router.post("/discounts", isSigned, isAdmin, createDiscounts);
+router.delete("/discounts", isSigned, isAdmin, deleteDiscounts);
+router.get("/discounts", isSigned, getAllDiscounts);
+router.post("/applydiscounts", isSigned, isPassenger, applyDiscounts);
+module.exports = router;
