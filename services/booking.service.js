@@ -1,63 +1,57 @@
-const db = require("../connection");
+const Booking = require("../models/Index").db.Booking;
+const Flight = require("../models/Index").db.Flight;
 
-exports.bookTicket = (data, callback) => {
+exports.bookTicket = async (data, callback) => {
     try {
-        db.query(
-            "Select capacity, ticketPrice FROM Flights WHERE id = ? ",
-            [data.flightId],
-            (err, result) => {
-                if (err) {
-                    return callback({ error: err }, null, 503);
-                } else if (result && data.seats > result[0].capacity) {
-                    return callback(
-                        null,
-                        {
-                            message: `${result[0].capacity} seats available`,
-                        },
-                        400
-                    );
-                } else {
-                    db.query(
-                        "INSERT INTO Bookings(passengerId,flightId,totalAmount) values(?,?,?)",
-                        [
-                            data.id,
-                            data.flightId,
-                            data.seats * result[0].ticketPrice,
-                        ],
-                        (err, result1) => {
-                            if (err) {
-                                return callback({ error: err }, null, 503);
-                            }
-                            return callback(
-                                null,
-                                {
-                                    message:
-                                        "booking confirm proceed to payment",
-                                },
-                                201
-                            );
-                        }
-                    );
-                }
-            }
-        );
+        const flightData = await Flight.findOne({
+            where: {
+                id: data.flightId,
+            },
+        });
+        if (!flightData) {
+            return callback({ error: "Invalid flightId" }, null, 404);
+        }
+        const currentCapacity = flightData.dataValues.capacity;
+        const flightFare = flightData.dataValues.ticketPrice;
+        if (data.seats > currentCapacity) {
+            return callback(
+                null,
+                { message: `${currentCapacity} seats available` },
+                400
+            );
+        }
+
+        data.totalAmount = data.seats * flightFare;
+
+        const bookingData = {
+            seatsBooked: data.seats,
+            totalAmount: data.totalAmount,
+            UserId: data.userId,
+        };
+
+        const bookingCreated = await Booking.create(bookingData);
+        if (bookingCreated) {
+            return callback(
+                null,
+                {
+                    message: "Booking confrim proceed to payment",
+                },
+                201
+            );
+        }
     } catch (err) {
-        return callback(err, null, 503);
+        return callback({ error: err }, null, 503);
     }
 };
 
-exports.getBookingDetail = (data, callback) => {
+exports.getBookingDetail = async (data, callback) => {
     try {
-        db.query(
-            "SELECT * FROM Bookings WHERE passengerId = ?",
-            [data.id],
-            (err, result) => {
-                if (err) {
-                    return callback({ error: err }, null, 503);
-                }
-                return callback(null, { message: result }, 200);
-            }
-        );
+        const bookingDetails = await Booking.findAll();
+        if (bookingDetails) {
+            return callback(null, { result: bookingDetails }, 200);
+        } else {
+            return callback({ error: "No bookings done yet" }, null, 400);
+        }
     } catch (err) {
         return callback({ error: err }, null, 503);
     }

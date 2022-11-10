@@ -1,13 +1,13 @@
 const { createUser, loginUser } = require("../services/auth.service");
 
 exports.register = (req, res) => {
-    createUser(req.body, (err, result, status_code) => {
+    createUser({ ...req.body }, (err, result, status_code) => {
         return res.status(status_code).json(err ? err : result);
     });
 };
 
 exports.login = (req, res) => {
-    loginUser(req.body, (err, result, status_code) => {
+    loginUser({ ...req.body }, (err, result, status_code) => {
         if (err) {
             return res.status(status_code).json({ error: err });
         }

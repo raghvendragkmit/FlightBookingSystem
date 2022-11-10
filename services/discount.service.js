@@ -1,71 +1,74 @@
-const db = require("../connection");
+const Discount = require("../models/Index").db.Discount;
+const Booking = require("../models/Index").db.Booking;
 
-exports.getAllDiscount = (callback) => {
-    db.query("SELECT * FROM Discounts", (err, result) => {
-        if (err) {
-            return callback({ error: err }, null, 503);
+exports.getAllDiscount = async (callback) => {
+    try {
+        const discount = await Discount.findAll();
+        if (discount) {
+            return callback(null, { result: discount }, 200);
         }
-        return callback(null, { message: result }, 200);
-    });
+    } catch (error) {
+        return callback({ error: err }, null, 503);
+    }
 };
 
-exports.createDiscount = (data, callback) => {
-    db.query(
-        "INSERT INTO Discounts(offer) VALUES(?)",
-        [data],
-        (err, result) => {
-            if (err) {
-                return callback(err, null, 503);
-            }
+exports.createDiscount = async (data, callback) => {
+    try {
+        const discountCreated = await Discount.create(data);
+        if (discountCreated) {
             return callback(
                 null,
-                { message: "discount created successfully" },
+                { message: "Discount created successfully" },
                 201
             );
         }
-    );
+    } catch (error) {
+        return callback({ error: error }, null, 503);
+        callback(null, { result: discount }, 200);
+    }
 };
 
-exports.applyDiscount = (data, callback) => {
-    db.query(
-        `SELECT Flights.airlineName, Bookings.id, Bookings.totalAmount FROM Flights INNER JOIN Bookings ON
-  Bookings.flightId = Flights.id WHERE Bookings.passengerId = ? AND Bookings.id = ?`,
-        [data.id, data.booking_Id],
-        (err, result) => {
-            if (err) {
-                return callback(err, null, 503);
+exports.applyDiscount = async (data, callback) => {
+    try {
+        const bookingData = await Booking.findOne({
+            where: {
+                id: data.bookingId,
+            },
+        });
+
+        if (!bookingData) {
+            return callback({ error: "Wrong booking id" }, null, 400);
+        }
+
+        const couponData = await Discount.findOne({
+            where: {
+                id: data.discountId,
+            },
+        });
+
+        if (!couponData) {
+            return callback({ error: "Invalid coupon id" }, null, 400);
+        }
+
+        const appliedDiscount = await Booking.update(
+            {
+                DiscountId: data.discountId,
+            },
+            {
+                where: {
+                    id: data.bookingId,
+                },
             }
-            let amount = result[0].totalAmount;
-            db.query(
-                `SELECT * from Discounts WHERE id = ? AND availableOn = ?`,
-                [data.coupon_Id, result[0].airlineName],
-                (err, result1) => {
-                    if (err) {
-                        return callback(err, null, 503);
-                    } else if (result1.length == 0) {
-                        return callback(
-                            null,
-                            { error: "No Discounts available" },
-                            400
-                        );
-                    }
-                    let discount = result1[0].amount;
-                    db.query(
-                        "UPDATE Bookings SET totalAmount = ? WHERE id = ?",
-                        [amount - discount, data.booking_Id],
-                        (err, result2) => {
-                            if (err) {
-                                return callback(err, null, 503);
-                            }
-                            return callback(
-                                null,
-                                { message: "Discounts applied" },
-                                200
-                            );
-                        }
-                    );
-                }
+        );
+
+        if (appliedDiscount) {
+            return callback(
+                null,
+                { message: "Discount Applied Successfully" },
+                200
             );
         }
-    );
+    } catch (error) {
+        return callback({ error: error }, null, 503);
+    }
 };
