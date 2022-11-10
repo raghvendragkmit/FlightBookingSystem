@@ -2,17 +2,19 @@ const Route = require("../models/Index").db.Route;
 
 exports.createRoute = async (data, callback) => {
     try {
+        console.log(data);
         const routeData = await Route.findOne({
             where: {
-                [Op.and]: [
-                    { source: data.source },
-                    { destination: data.destination },
-                ],
+                // [Op.and]: [
+                source: data.source,
+                destination: data.destination,
+                // ],
             },
         });
+        console.log(routeData, "bcbchvhecbvevg");
 
         if (routeData) {
-            return callback({ error: "Route Already exist" }, 400);
+            return callback({ error: "Route Already exist" }, null, 409);
         }
 
         const routeCreated = await Route.create(data);
@@ -41,7 +43,8 @@ exports.getAllRoute = async (callback) => {
 
 exports.deleteRoute = async (data, callback) => {
     try {
-        const routeDeleted = await Route.delete({
+        console.log(data);
+        const routeDeleted = await Route.destroy({
             where: {
                 id: data.id,
             },

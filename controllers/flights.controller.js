@@ -17,11 +17,8 @@ exports.deleteFlights = (req, res) => {
     const id = Number(req.query.id);
     console.log(typeof id);
     if (Number.isInteger(id)) {
-        deleteFlight(id, (err, result, status_code) => {
-            if (err) {
-                return res.status(status_code).json(err);
-            }
-            return res.status(status_code).json({ result });
+        deleteFlight({ id: id }, (err, result, status_code) => {
+            return res.status(status_code).json(err ? err : result);
         });
     } else {
         return res.status(400).json({ error: "id must be integer" });

@@ -12,7 +12,10 @@ router.post(
             "bookingId",
             "bookingId is required and must be an integer"
         ).isInt(),
-        body("paymentType", "paymentType is required").isString().trim().isLength({min:3}),
+        body("paymentMethod", "paymentMethod is required")
+            .isString()
+            .trim()
+            .isLength({ min: 3 }),
     ]),
     isSigned,
     payments
